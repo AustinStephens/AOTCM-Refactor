@@ -11,6 +11,7 @@ public abstract class Monster {
   public float damage;
   
   public boolean attackMode = false;
+  public PVector attackLocation = new PVector(0,0);
   public Unit attackTarget;
   
   public float speedMult = 1;
@@ -97,23 +98,19 @@ public abstract class Monster {
             pos = tileToPoint(nextTile.copy());
             int i = (int)nextTile.x;
             int j = (int)nextTile.y;
-            PVector attackLocation = new PVector(0,0);
+            attackLocation = new PVector(0,0);
             attackMode = false;
             if(i+1 < worldRows && scene.grid[i+1][j].hasUnits) { 
-              attackMode = true;
-              attackLocation = new PVector(j, i+1);
+              attack(j, i+1);
             }
             if(i-1 > 0 && scene.grid[i-1][j].hasUnits) { 
-              attackMode = true;
-              attackLocation = new PVector(j, i-1);
+              attack(j, i-1);
             }
             if(j+1 < worldCols && scene.grid[i][j+1].hasUnits) { 
-              attackMode = true;
-              attackLocation = new PVector(j+1, i);
+              attack(j+1, i);
             }
             if(j-1 > 0 && scene.grid[i][j-1].hasUnits) { 
-              attackMode = true;
-              attackLocation = new PVector(j-1, i);
+              attack(j-1, i);
             }
             
             if(attackMode) {
@@ -127,6 +124,11 @@ public abstract class Monster {
           pos.add(travel);
       }
     }
+  }
+  
+  public void attack(int j, int i) {
+    attackMode = true;
+    attackLocation = new PVector(j, i);
   }
 }
 
