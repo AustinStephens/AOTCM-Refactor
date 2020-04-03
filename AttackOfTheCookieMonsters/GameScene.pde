@@ -53,21 +53,7 @@ public class GameScene extends Scene {
       }
     }
     
-    image(Images.factoryLevelBar, 0, -70);
-    image(Images.recipesBar, 50, 392, 150, 48);
-    image(Images.upgradeBar, 800, 392, 150, 48);
-    textSize(20);
-    fill(0);
-    image(Images.CookieDoughConcept, 250, 5, 40, 40);
-    text(cookieDough, 300, 35);
-    image(Images.TrefoilsConcept, 450, 5, 40, 40);
-    text(trefoils, 500, 35);
-    image(Images.GemsConcept, 650, 5, 40, 40);
-    text(gems, 700, 35);
-    PVector p = tileToCorner(17,7);
-    image(Images.Factory_Design_Lvl2, p.x - tileWidth * .7, p.y - tileHeight * .3, tileWidth * 3.5, tileHeight * 6);
-    waveState.displayTimer();
-    fill(255);
+    displayUI();
   }
   
   public void onSceneEnter() {
@@ -164,9 +150,9 @@ public class GameScene extends Scene {
     int maxJ = 0;
     
     if(i < 0 || j < 0) available = false;
-    if(i + building.rows < worldRows) maxI = i + building.rows;
+    if(i + building.buildingHeight < worldRows) maxI = i + building.buildingHeight;
     else available = false;
-    if(j + building.cols < worldCols) maxJ = j + building.cols;
+    if(j + building.buildingWidth < worldCols) maxJ = j + building.buildingWidth;
     else available = false;
     for(int k = i; k < maxI && k < worldRows; k++) {
       for(int l = j; l < maxJ && l < worldCols; l++) {
@@ -197,5 +183,23 @@ public class GameScene extends Scene {
       grid[i][j].hasUnits = true;
       Pathfinder.worldTiles[j][i].cost = 10;
     }
+  }
+  
+  private void displayUI() {
+    image(Images.factoryLevelBar, 0, -70);
+    image(Images.recipesBar, 50, 392, 150, 48);
+    image(Images.upgradeBar, 800, 392, 150, 48);
+    textSize(20);
+    fill(0);
+    image(Images.CookieDoughConcept, 250, 5, 40, 40);
+    text(cookieDough, 300, 35);
+    image(Images.TrefoilsConcept, 450, 5, 40, 40);
+    text(trefoils, 500, 35);
+    image(Images.GemsConcept, 650, 5, 40, 40);
+    text(gems, 700, 35);
+    PVector p = tileToCorner(17,7);
+    image(Images.Factory_Design_Lvl2, p.x - tileWidth * .7, p.y - tileHeight * .3, tileWidth * 3.5, tileHeight * 6);
+    waveState.displayTimer();
+    fill(255);
   }
 }
