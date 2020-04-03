@@ -39,6 +39,22 @@ public abstract class Monster {
   
   public void update(GameScene scene) {
     noTint();
+    
+    counters();
+    pathfinding(scene);
+    display();
+    
+    if(health < 0) isDead = true;
+  }
+  
+  public abstract void display();
+  
+  public void findPath() {
+    path = Pathfinder.findPath(start, targetPos);
+    nextTile = path.poll();
+  }
+  
+  private void counters() {
     if(frostTimer <= 0) speedMult = 1f;
     else {
       speedMult = .5f;
@@ -54,7 +70,9 @@ public abstract class Monster {
     if(frameCounter > 0) {
       frameCounter -= Time.deltaTime;
     }
-    //noTint();
+  }
+  
+  private void pathfinding(GameScene scene) {
     if(attackMode && attackTarget != null) {
       if(attackTarget.health > 0)
         attackTarget.health -= damage * Time.deltaTime;
@@ -109,15 +127,6 @@ public abstract class Monster {
           pos.add(travel);
       }
     }
-    display();
-    if(health < 0) isDead = true;
-  }
-  
-  public abstract void display();
-  
-  public void findPath() {
-    path = Pathfinder.findPath(start, targetPos);
-    nextTile = path.poll();
   }
 }
 

@@ -149,6 +149,7 @@ public class GameScene extends Scene {
     int maxI = 0;
     int maxJ = 0;
     
+    //checking if a valid location
     if(i < 0 || j < 0) available = false;
     if(i + building.buildingHeight < worldRows) maxI = i + building.buildingHeight;
     else available = false;
@@ -159,7 +160,6 @@ public class GameScene extends Scene {
           if(grid[i][j].isOccupied || !grid[i][j].buildable()) available = false;
       }
     }
-    
     
     if(available) { 
       buildings.add(building);

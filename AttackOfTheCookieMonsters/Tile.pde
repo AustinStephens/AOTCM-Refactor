@@ -1,6 +1,4 @@
 public abstract class Tile {
-  private final int tileWidth = 50;
-  private final int tileHeight = 50;
   public int x;
   public int y;
   public int cost;
