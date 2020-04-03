@@ -1,34 +1,40 @@
-public class Building {
+public abstract class Building {
   public GameScene scene;
-  public int rows;
-  public int cols;
-  
+  public int buildingWidth;
+  public int buildingHeight;
   public int i, j;
   
-  public Building(GameScene scene, int i, int j) {
+  protected float buildingTimerMax;
+  protected float buildingTimer;
+  
+  public Building(GameScene scene, int i, int j, float buildingTimerMax) {
     this.scene = scene;
     this.i = i;
     this.j = j;
+    this.buildingTimerMax = buildingTimerMax;
+    this.buildingTimer = buildingTimerMax;
   }
   public int cost;
-  public void update() {}
+  public void update() {
+    if(buildingTimer > 0) buildingTimer -= Time.deltaTime;
+    else {
+      buildingTimer = buildingTimerMax;
+      timerAction();
+    }
+  }
   public void display() {}
+  public abstract void timerAction();
 }
 
 public class CookieDoughMine extends Building {
-  private final float DOUGH_TIMER_MAX = 8f;
-  private float doughTimer = DOUGH_TIMER_MAX;
   public CookieDoughMine(GameScene scene, int i, int j) {
-    super(scene, i, j);
-    rows = 2;
-    cols = 2;
+    super(scene, i, j, 8f);
+    buildingWidth = 2;
+    buildingHeight = 2;
   }
-  public void update() {
-    if(doughTimer > 0) doughTimer -= Time.deltaTime;
-    else {
-      doughTimer = DOUGH_TIMER_MAX;
-      scene.cookieDough += 5;
-    }
+  
+  public void timerAction() {
+    scene.cookieDough += 5;
   }
   
   public void display() {
@@ -38,19 +44,14 @@ public class CookieDoughMine extends Building {
 }
 
 public class TrefoilMine extends Building {
-  private final float TREF_TIMER_MAX = 8f;
-  private float trefTimer = TREF_TIMER_MAX;
   public TrefoilMine(GameScene scene, int i, int j) {
-    super(scene, i, j);
-    rows = 2;
-    cols = 2;
+    super(scene, i, j, 8f);
+    buildingWidth = 2;
+    buildingHeight = 2;
   }
-  public void update() {
-    if(trefTimer > 0) trefTimer -= Time.deltaTime;
-    else {
-      trefTimer = TREF_TIMER_MAX;
-      scene.trefoils += 2;
-    }
+  
+  public void timerAction() {
+    scene.trefoils += 2;
   }
   
   public void display() {
@@ -60,19 +61,19 @@ public class TrefoilMine extends Building {
 }
 
 public class ToffeeTower extends Building {
-  private final float SHOOT_TIMER_MAX = 2f;
-  private float shootTimer = SHOOT_TIMER_MAX;
   public float range = 100f;
   public int damage = 34;
   public Monster target;
   public ToffeeTower(GameScene scene, int i, int j) {
-    super(scene, i, j);
-    rows = 1;
-    cols = 1;
+    super(scene, i, j,2f);
+    buildingWidth = 1;
+    buildingHeight = 1;
   }
+  
+  @Override
   public void update() {
     //DETECT FOR ENEMIES
-    if(shootTimer > 0) shootTimer -= Time.deltaTime;
+    if(buildingTimer > 0) buildingTimer -= Time.deltaTime;
     float monsterX = 0;
     target = null;
     PVector p = tileToPoint(new PVector(j,i));
@@ -87,10 +88,10 @@ public class ToffeeTower extends Building {
     }
     
     if(target != null) {
-      if(shootTimer <= 0) {
+      if(buildingTimer <= 0) {
         target.health -= damage;
         scene.projectiles.add(new Projectile(Images.ToffeeProjectile, target, 120, tileToPoint(new PVector(j,i)))); 
-        shootTimer = SHOOT_TIMER_MAX;
+        buildingTimer = buildingTimerMax;
       }
     }
   }
@@ -99,22 +100,24 @@ public class ToffeeTower extends Building {
     PVector p = tileToCorner(j, i);
     image(Images.ToffeeTowerLvl3, p.x, p.y - tileHeight / 2, tileWidth * 1.6, tileHeight * 1.5);
   }
+  
+  public void timerAction() {}
 }
 
 public class ThinMintTower extends Building {
-  private final float SHOOT_TIMER_MAX = 3f;
-  private float shootTimer = SHOOT_TIMER_MAX;
   public float range = 100f;
   public int damage = 20;
   public ArrayList<Monster> inRange = new ArrayList<Monster>();
   public ThinMintTower(GameScene scene, int i, int j) {
-    super(scene, i, j);
-    rows = 1;
-    cols = 1;
+    super(scene, i, j, 3f);
+    buildingWidth = 1;
+    buildingHeight = 1;
   }
+  
+  @Override
   public void update() {
     //DETECT FOR ENEMIES
-    if(shootTimer > 0) shootTimer -= Time.deltaTime;
+    if(buildingTimer > 0) buildingTimer -= Time.deltaTime;
     inRange.clear();
     PVector p = tileToPoint(new PVector(j,i));
     for(int i = 0; i < scene.monsters.size(); i++) {
@@ -125,7 +128,7 @@ public class ThinMintTower extends Building {
     }
     
     if(!inRange.isEmpty()) {
-      if(shootTimer <= 0) {
+      if(buildingTimer <= 0) {
         for(int i = 0; i < inRange.size(); i++) {
           Monster m = inRange.get(i);
           m.health -= damage;
@@ -133,7 +136,7 @@ public class ThinMintTower extends Building {
         }
         //show projectile
         image(Images.ThinMintProjectile, p.x - range, p.y - range/2, range, range);
-        shootTimer = SHOOT_TIMER_MAX;
+        buildingTimer = buildingTimerMax;
       }
     }
   }
@@ -142,22 +145,24 @@ public class ThinMintTower extends Building {
     PVector p = tileToCorner(j, i);
     image(Images.ThinMintTowerLvl2, p.x - tileWidth * 1.38, p.y - tileHeight, tileWidth * 1.8, tileHeight * 2);
   }
+  
+  public void timerAction() {}
 }
 
 public class SmoresTower extends Building {
-  private final float SHOOT_TIMER_MAX = 3f;
-  private float shootTimer = SHOOT_TIMER_MAX;
   public float range = 100f;
   public int damage = 20;
   public Monster target;
   public SmoresTower(GameScene scene, int i, int j) {
-    super(scene, i, j);
-    rows = 1;
-    cols = 1;
+    super(scene, i, j, 3f);
+    buildingWidth = 1;
+    buildingHeight = 1;
   }
+  
+  @Override
   public void update() {
     //DETECT FOR ENEMIES
-    if(shootTimer > 0) shootTimer -= Time.deltaTime;
+    if(buildingTimer > 0) buildingTimer -= Time.deltaTime;
     float monsterX = 0;
     target = null;
     PVector p = tileToPoint(new PVector(j,i));
@@ -172,11 +177,11 @@ public class SmoresTower extends Building {
     }
     
     if(target != null) {
-      if(shootTimer <= 0) {
+      if(buildingTimer <= 0) {
         target.health -= damage;
         target.fireTimer = target.FIRE_TIMER_MAX;
         scene.projectiles.add(new Projectile(Images.SmoresProjectile, target, 120, tileToPoint(new PVector(j,i)))); 
-        shootTimer = SHOOT_TIMER_MAX;
+        buildingTimer = buildingTimerMax;
       }
     }
   }
@@ -185,4 +190,6 @@ public class SmoresTower extends Building {
     PVector p = tileToCorner(j, i);
     image(Images.SmoresTowerLvl2, p.x - tileWidth / 2.3, p.y - tileHeight / 1.9, tileWidth * 1.8, tileHeight * 2);
   }
+  
+  public void timerAction() {}
 }
